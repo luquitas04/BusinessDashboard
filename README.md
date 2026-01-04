@@ -1,28 +1,62 @@
 # Business Dashboard (Vite + React + TypeScript)
 
-Admin-style dashboard built with React, Redux Toolkit, RTK Query, React Router, SCSS, and json-server mock API. The UI follows a strict Feature-Sliced Design (FSD) structure and includes i18n (English default with toggle), role-based routing, CRUD for customers/products, and order status management.
+Admin-style dashboard built with **React**, **Redux Toolkit**, **RTK Query**, **React Router**, **SCSS**, and a mock API.
+The project simulates a real-world internal SaaS tool, focusing on **state-heavy UIs**, **role-based permissions**, and **scalable frontend architecture** using a strict **Feature-Sliced Design (FSD)** structure.
 
 ## Demo
-Project demo: <a href="https://businessdashbo4rd.netlify.app/login" target="_blank">businessdashbo4rd.netlify.app</a>
+🔗 https://businessdashbo4rd.netlify.app
 
-## Quick Start
-- Requirements: Node 18+ and npm
-- Install: `npm install`
-- Start mock API (port 4000): `npm run mock`
-- Start app (port 5173): `npm run dev`
-  - Run `mock` and `dev` in separate terminals.
-- Demo deploys: set env `VITE_API_MODE=mock` to enable MSW runtime mocking.
-- Lint: `npm run lint`
-- Build: `npm run build`
-- Tests (Jest + RTL + MSW):
-  - `npm test`
-  - `npm run test:watch`
-  - CI mode: `npm run test:ci`
+**Mock accounts**
+- **Admin:** `admin@test.com`
+- **Staff:** `staff@test.com`
 
-## Mock Accounts (json-server)
-- Admin: `admin@test.com`
-- Staff: `staff@test.com`
-These emails authenticate via the mock `/users?email=` endpoint and drive the role-based UI.
+> The live demo runs without a real backend. API calls are intercepted using **MSW (Mock Service Worker)**.
+
+---
+
+## Key Features
+- Role-based UI and routing (admin / staff)
+- Customers, products and orders management
+- Advanced tables:
+  - search
+  - filtering
+  - sorting
+  - pagination
+- CRUD flows with confirmation modals
+- Order status transitions (pending → paid / cancelled)
+- Loading, empty and error states
+- Success / error toasts for async operations
+- Internationalization (English default with language toggle)
+
+---
+
+## Killer Feature: Role-based permissions (UI + routing)
+This project implements **role-based access control beyond route protection**, closely resembling real SaaS admin dashboards:
+
+- **Admin**
+  - Full access to Customers, Products and Orders
+  - Can create, update and delete entities
+  - Can change order statuses
+
+- **Staff**
+  - Read access to Customers and Orders
+  - Restricted access to Products (`/products` is blocked)
+  - Destructive actions are hidden or disabled at UI level
+
+Permissions are enforced through **centralized guards**, ensuring that both **navigation and UI actions** adapt to the current user role.
+
+---
+
+## Tech Stack
+- **Frontend:** React, TypeScript, JavaScript
+- **State & Data:** Redux Toolkit, RTK Query
+- **Routing:** React Router
+- **Styling:** SCSS (no external UI libraries)
+- **Mocking:** json-server (local), MSW (live demo)
+- **Testing:** Jest, React Testing Library, MSW
+- **Tooling:** Vite, ESLint
+
+---
 
 ## Architecture (Strict FSD)
 - `app/` — app shell: router, providers, store wiring.
@@ -35,34 +69,17 @@ These emails authenticate via the mock `/users?email=` endpoint and drive the ro
 ## Functionality
 - Auth: email-only mock login, localStorage persistence, role-aware nav.
 - Layout: `DashboardLayout` with `Sidebar` + `Topbar` (logout + language toggle).
-- Protected routes: `/login`, `/customers`, `/products`, `/orders`, `/` redirects to `/customers`.
-- Customers: search, status filter, sort, pagination, create/edit/delete modals, loading/empty/error states, permission-aware actions.
-- Products: catalog list with search/filter/pagination, modals for create/edit, delete with confirm, loading/empty/error states; buttons respect permissions.
-- Orders: list with status transitions (pending → paid/cancelled), per-row loading/error handling, create order modal, status changes gated by role.
-- Toasters: success/error feedback across CRUD flows.
+- Protected routes:
+  - `/login`
+  - `/customers`
+  - `/products` (admin only)
+  - `/orders`
+  - `/` redirects to `/customers`
+- Customers: search, status filter, sort, pagination, create/edit/delete modals, loading/empty/error states.
+- Products: CRUD with modals, status including `archived`.
+- Orders: list with status transitions (pending → paid/cancelled), per-row loading/error handling, create order modal.
+- Toasters: success/error feedback.
 - i18n: English by default; toggle to Spanish from the Topbar.
-
-## Killer Feature — Role-based UI + Permission Guard System
-Role-aware UI and guards control what each user sees and can do:
-
-```ts
-const permissions = {
-  admin: {
-    customers: ["read", "create", "update", "delete"],
-    products: ["read", "create", "update", "delete"],
-    orders: ["read", "create", "update"],
-  },
-  staff: {
-    customers: ["read", "update"],
-    products: ["read"],
-    orders: ["read"],
-  },
-};
-```
-
-- Router guard checks permissions per route (no access → redirect).
-- Sidebar only shows links the role can read.
-- Tables/buttons hide or disable actions the role cannot perform (e.g., staff cannot delete or change order status).
 
 ## Testing Stack
 - Jest with `ts-jest` + `jest-environment-jsdom`.
