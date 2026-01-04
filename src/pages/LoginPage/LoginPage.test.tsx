@@ -1,6 +1,6 @@
 import userEvent from "@testing-library/user-event";
 import { Routes, Route } from "react-router-dom";
-import { screen, waitFor } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { LoginPage } from "./index";
 import { CustomersPage } from "../CustomersPage";
 import { renderWithProviders } from "../../shared/test/renderWithProviders";

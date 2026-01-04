@@ -1,8 +1,7 @@
 import { http, HttpResponse, delay } from "msw";
-import { Customers } from "../../entities/customer/types/type";
-import { Product } from "../../entities/product/types/type";
-import { Order } from "../../entities/order/types/type";
-import { User } from "../../entities/users/types/type";
+import { Customers } from "../../../entities/customer/types/type";
+import { Product } from "../../../entities/product/types/type";
+import { Order } from "../../../entities/order/types/type";
 
 const baseUrl = "http://localhost:4000";
 

@@ -4,15 +4,21 @@ import App from "./App.tsx";
 import "./index.css";
 import { AppProviders } from "./app/providers/AppProviders";
 
-if (import.meta.env.VITE_API_MODE === "mock") {
-  const { worker } = await import("./shared/test/msw/browser");
-  await worker.start();
+async function bootstrap() {
+  if (import.meta.env.VITE_API_MODE === "mock") {
+    const { worker } = await import("./shared/test/msw/browser");
+    await worker.start({
+      onUnhandledRequest: "bypass",
+    });
+  }
+
+  createRoot(document.getElementById("root")!).render(
+    <StrictMode>
+      <AppProviders>
+        <App />
+      </AppProviders>
+    </StrictMode>
+  );
 }
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <AppProviders>
-      <App />
-    </AppProviders>
-  </StrictMode>
-);
+bootstrap();
