@@ -8,6 +8,7 @@ Admin-style dashboard built with React, Redux Toolkit, RTK Query, React Router, 
 - Start mock API (port 4000): `npm run mock`
 - Start app (port 5173): `npm run dev`
   - Run `mock` and `dev` in separate terminals.
+- Demo deploys: set env `VITE_API_MODE=mock` to enable MSW runtime mocking.
 - Lint: `npm run lint`
 - Build: `npm run build`
 - Tests (Jest + RTL + MSW):
@@ -65,3 +66,13 @@ src/
 - The mock API is stateful while the server runs; restart `npm run mock` to reset data to `mock/db.json`.
 - Base API URL is `http://localhost:4000` (see `src/shared/api/baseApi.ts`).
 - Styled with SCSS (no external UI kits) to keep a lightweight, professional admin look.
+
+## Demo & Mock API
+
+This project uses a mock API for demonstration purposes.
+
+- **Local development**: json-server (`npm run mock`) provides a stateful mock backend.
+- **Live demo**: API requests are intercepted using **MSW (Mock Service Worker)** to ensure a stable, backend-free demo.
+
+> Note: In the live demo, data mutations are simulated and may reset on reload.  
+> The API layer is implemented with RTK Query and is ready to connect to a real backend.
