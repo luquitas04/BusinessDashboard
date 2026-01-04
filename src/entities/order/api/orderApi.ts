@@ -39,6 +39,14 @@ export const orderApi = baseApi.injectEndpoints({
             ]
           : [{ type: "Orders", id: "LIST" }],
     }),
+    createOrder: builder.mutation<Order, Omit<Order, "id">>({
+      query: (body) => ({
+        url: "/orders",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: [{ type: "Orders", id: "LIST" }],
+    }),
     updateOrderStatus: builder.mutation<
       Order,
       { id: number; status: Order["status"] }
@@ -56,4 +64,8 @@ export const orderApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useGetOrdersQuery, useUpdateOrderStatusMutation } = orderApi;
+export const {
+  useGetOrdersQuery,
+  useUpdateOrderStatusMutation,
+  useCreateOrderMutation,
+} = orderApi;

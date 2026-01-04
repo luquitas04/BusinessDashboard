@@ -1,0 +1,39 @@
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  gap: 1rem;
+}
+
+.topbar__title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.topbar__user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.topbar__user-meta {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+}
+
+.topbar__user-name {
+  font-weight: 600;
+  color: #111827;
+}
+
+.topbar__user-role {
+  font-size: 0.85rem;
+  color: #6b7280;
+  text-transform: capitalize;
+}

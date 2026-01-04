@@ -1,6 +1,15 @@
-export interface IRoute {
-  path: string;
-  component: () => JSX.Element | null;
-}
+import { CustomersPage } from "../../pages/CustomersPage";
+import { OrdersPage } from "../../pages/OrdersPage";
+import { ProductsPage } from "../../pages/ProductsPage";
 
-export const routes: IRoute[] = [];
+type RouteConfig = {
+  path: string;
+  element: JSX.Element;
+  onlyAdmin?: boolean;
+};
+
+export const protectedRoutes: RouteConfig[] = [
+  { path: "/customers", element: <CustomersPage /> },
+  { path: "/orders", element: <OrdersPage /> },
+  { path: "/products", element: <ProductsPage />, onlyAdmin: true },
+];

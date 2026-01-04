@@ -1,0 +1,30 @@
+.login-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  max-width: 420px;
+  width: 100%;
+}
+
+.login-card__title {
+  margin: 0 0 0.35rem;
+  font-size: 1.25rem;
+}
+
+.login-card__subtitle {
+  margin: 0 0 1.25rem;
+  color: #6b7280;
+}
+
+.login-card__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.login-card__error {
+  color: #b91c1c;
+  font-size: 0.9rem;
+}

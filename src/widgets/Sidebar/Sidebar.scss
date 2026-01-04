@@ -1,0 +1,102 @@
+.sidebar {
+  background-color: #111827;
+  color: #f9fafb;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem;
+}
+
+.sidebar__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.sidebar__brand {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.sidebar__role {
+  font-size: 0.85rem;
+  color: #9ca3af;
+  text-transform: capitalize;
+}
+
+.sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sidebar__note {
+  font-size: 0.85rem;
+  color: #111827;
+  background: #fef3c7;
+  border: 1px solid #fcd34d;
+  border-radius: 8px;
+  padding: 0.75rem;
+  line-height: 1.4;
+  margin: 0.5rem 0;
+}
+
+.sidebar__link {
+  padding: 0.75rem 0.9rem;
+  border-radius: 8px;
+  color: #e5e7eb;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.sidebar__link:hover {
+  background-color: #1f2937;
+  color: #fff;
+}
+
+.sidebar__link--active {
+  background-color: #2563eb;
+  color: #fff;
+}
+
+.sidebar__logout {
+  margin-top: auto;
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid #1f2937;
+  background-color: #1f2937;
+  color: #e5e7eb;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.sidebar__logout:hover {
+  background-color: #f9fafb;
+  color: #111827;
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    border-bottom: 1px solid #1f2937;
+  }
+
+  .sidebar__nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  .sidebar__link {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .sidebar__logout {
+    width: auto;
+    padding: 0.5rem 0.75rem;
+    margin-top: 0;
+  }
+}

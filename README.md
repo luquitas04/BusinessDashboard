@@ -1,50 +1,67 @@
-# React + TypeScript + Vite
+# Business Dashboard (Vite + React + TypeScript)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Admin-style dashboard built with React, Redux Toolkit, RTK Query, React Router, SCSS, and json-server mock API. The UI follows a strict Feature-Sliced Design (FSD) structure and includes i18n (English default with toggle), role-based routing, CRUD for customers/products, and order status management.
 
-Currently, two official plugins are available:
+## Quick Start
+- Requirements: Node 18+ and npm
+- Install: `npm install`
+- Start mock API (port 4000): `npm run mock`
+- Start app (port 5173): `npm run dev`
+  - Run `mock` and `dev` in separate terminals.
+- Lint: `npm run lint`
+- Build: `npm run build`
+- Tests (Jest + RTL + MSW):
+  - `npm test`
+  - `npm run test:watch`
+  - CI mode: `npm run test:ci`
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Mock Accounts (json-server)
+- Admin: `admin@test.com`
+- Staff: `staff@test.com`
+These emails authenticate via the mock `/users?email=` endpoint. Admin can access all routes; Staff cannot open `/products`.
 
-## Expanding the ESLint configuration
+## Architecture (Strict FSD)
+- `app/` — app shell: router, providers, store wiring.
+- `pages/` — route-level screens composed from widgets/features only.
+- `widgets/` — large UI blocks (tables, layout shell).
+- `features/` — reusable UI + interaction logic (auth controls, modals).
+- `entities/` — domain models + RTK Query endpoints/types (unchanged).
+- `shared/` — UI primitives, styles, lib utilities, router guards, tests, i18n.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## Functionality
+- Auth: email-only mock login, localStorage persistence, role-aware nav.
+- Layout: `DashboardLayout` with `Sidebar` + `Topbar` (logout + language toggle).
+- Protected routes:
+  - `/login`
+  - `/customers`
+  - `/products` (admin only)
+  - `/orders`
+  - `/` redirects to `/customers`
+- Customers: search, status filter, sort, pagination, create/edit/delete modals, loading/empty/error states.
+- Products: CRUD with modals, status including `archived`.
+- Orders: list with status transitions (pending → paid/cancelled), per-row loading/error handling, create order modal.
+- Toasters: success/error feedback.
+- i18n: English by default; toggle to Spanish from the Topbar.
 
-- Configure the top-level `parserOptions` property like this:
+## Testing Stack
+- Jest with `ts-jest` + `jest-environment-jsdom`.
+- React Testing Library + jest-dom + user-event.
+- MSW (node server) for mocking API calls used by RTK Query.
+- Helpers live in `src/shared/test/` (`setupTests.ts`, `msw/handlers.ts`, `renderWithProviders.tsx`).
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Project Structure (high level)
+```
+mock/db.json              # json-server data (users, customers, products, orders)
+src/
+  app/                    # router, providers, store
+  pages/                  # LoginPage, CustomersPage, ProductsPage, OrdersPage
+  widgets/                # Sidebar, Topbar, CustomersTable, ProductsTable, OrdersTable
+  features/               # Auth UI/logic, forms, modals
+  entities/               # RTK Query endpoints and types
+  shared/                 # ui primitives, lib (router guards, i18n, debounce), test utilities
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+## Notes
+- The mock API is stateful while the server runs; restart `npm run mock` to reset data to `mock/db.json`.
+- Base API URL is `http://localhost:4000` (see `src/shared/api/baseApi.ts`).
+- Styled with SCSS (no external UI kits) to keep a lightweight, professional admin look.

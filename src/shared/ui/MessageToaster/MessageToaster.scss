@@ -1,0 +1,53 @@
+.message-toaster {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  padding: 0.75rem 1rem;
+  background-color: #ecfdf3;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  max-width: 320px;
+  opacity: 0;
+  transform: translateY(8px);
+  animation: message-fade-in 200ms ease forwards,
+    message-fade-out 200ms ease forwards 4.8s;
+}
+
+.message-toaster__content {
+  flex: 1;
+}
+
+.message-toaster__close {
+  background: transparent;
+  border: none;
+  color: #166534;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+@keyframes message-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes message-fade-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}

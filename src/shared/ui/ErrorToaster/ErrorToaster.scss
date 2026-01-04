@@ -1,0 +1,53 @@
+.error-toaster {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  padding: 0.75rem 1rem;
+  background-color: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  max-width: 320px;
+  opacity: 0;
+  transform: translateY(8px);
+  animation: error-fade-in 200ms ease forwards,
+    error-fade-out 200ms ease forwards 4.8s;
+}
+
+.error-toaster__content {
+  flex: 1;
+}
+
+.error-toaster__close {
+  background: transparent;
+  border: none;
+  color: #991b1b;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+@keyframes error-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes error-fade-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}

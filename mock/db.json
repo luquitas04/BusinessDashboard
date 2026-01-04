@@ -1,7 +1,17 @@
 {
   "users": [
-    { "id": 1, "email": "admin@test.com", "role": "admin", "name": "Admin User" },
-    { "id": 2, "email": "staff@test.com", "role": "staff", "name": "Staff User" }
+    {
+      "id": 1,
+      "email": "admin@test.com",
+      "role": "admin",
+      "name": "Admin User"
+    },
+    {
+      "id": 2,
+      "email": "staff@test.com",
+      "role": "staff",
+      "name": "Staff User"
+    }
   ],
   "customers": [
     {
@@ -27,14 +37,63 @@
     }
   ],
   "products": [
-    { "id": 1, "name": "CRM Suite", "price": 1200, "stock": 25, "status": "active" },
-    { "id": 2, "name": "Analytics Pro", "price": 800, "stock": 15, "status": "active" },
-    { "id": 3, "name": "Support Desk", "price": 500, "stock": 40, "status": "active" },
-    { "id": 4, "name": "Legacy Toolkit", "price": 200, "stock": 5, "status": "archived" }
+    {
+      "id": 1,
+      "name": "CRM Suite",
+      "price": 1200,
+      "stock": 25,
+      "status": "active"
+    },
+    {
+      "id": 2,
+      "name": "Analytics Pro",
+      "price": 800,
+      "stock": 15,
+      "status": "active"
+    },
+    {
+      "id": 3,
+      "name": "Support Desk",
+      "price": 500,
+      "stock": 40,
+      "status": "active"
+    },
+    {
+      "id": 4,
+      "name": "Legacy Toolkit",
+      "price": 200,
+      "stock": 5,
+      "status": "archived"
+    }
   ],
   "orders": [
-    { "id": 1, "customerId": 1, "status": "paid", "total": 2000, "createdAt": "2024-04-01T11:15:00Z" },
-    { "id": 2, "customerId": 2, "status": "pending", "total": 1200, "createdAt": "2024-04-12T16:20:00Z" },
-    { "id": 3, "customerId": 3, "status": "cancelled", "total": 500, "createdAt": "2024-05-03T08:05:00Z" }
+    {
+      "id": 1,
+      "customerId": 1,
+      "status": "paid",
+      "total": 2000,
+      "createdAt": "2024-04-01T11:15:00Z"
+    },
+    {
+      "id": 2,
+      "customerId": 2,
+      "status": "pending",
+      "total": 1200,
+      "createdAt": "2024-04-12T16:20:00Z"
+    },
+    {
+      "id": 3,
+      "customerId": 3,
+      "status": "cancelled",
+      "total": 500,
+      "createdAt": "2024-05-03T08:05:00Z"
+    },
+    {
+      "id": "2de3",
+      "customerId": 1,
+      "total": 1222,
+      "status": "paid",
+      "createdAt": "2026-01-04T16:44:42.878Z"
+    }
   ]
 }

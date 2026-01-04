@@ -1,0 +1,30 @@
+.ui-input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.95rem;
+  color: #111827;
+}
+
+.ui-input__label {
+  font-weight: 600;
+}
+
+.ui-input__field {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ui-input__field:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.ui-input__error {
+  color: #b91c1c;
+  font-size: 0.85rem;
+}
