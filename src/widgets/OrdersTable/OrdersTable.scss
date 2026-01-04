@@ -123,6 +123,17 @@
   border-radius: 10px;
 }
 
+.orders-state__title {
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.orders-state__description {
+  color: #4b5563;
+  text-align: center;
+  max-width: 340px;
+}
+
 .orders-state--inline {
   align-items: flex-start;
   background: transparent;

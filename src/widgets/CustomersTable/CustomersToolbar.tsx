@@ -15,6 +15,7 @@ type Props = {
   pageSize: number;
   onPageSizeChange: (size: number) => void;
   onCreate: () => void;
+  canCreate?: boolean;
 };
 
 export const CustomersToolbar = ({
@@ -29,6 +30,7 @@ export const CustomersToolbar = ({
   pageSize,
   onPageSizeChange,
   onCreate,
+  canCreate = true,
 }: Props) => {
   const { t } = useI18n();
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
@@ -80,7 +82,7 @@ export const CustomersToolbar = ({
           <option value={20}>20</option>
         </Select>
       </div>
-      <Button onClick={onCreate}>{t("customers.new")}</Button>
+      {canCreate && <Button onClick={onCreate}>{t("customers.new")}</Button>}
     </div>
   );
 };

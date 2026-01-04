@@ -22,7 +22,7 @@ Project demo: <a href="https://businessdashbo4rd.netlify.app/login" target="_bla
 ## Mock Accounts (json-server)
 - Admin: `admin@test.com`
 - Staff: `staff@test.com`
-These emails authenticate via the mock `/users?email=` endpoint. Admin can access all routes; Staff cannot open `/products`.
+These emails authenticate via the mock `/users?email=` endpoint and drive the role-based UI.
 
 ## Architecture (Strict FSD)
 - `app/` — app shell: router, providers, store wiring.
@@ -35,17 +35,34 @@ These emails authenticate via the mock `/users?email=` endpoint. Admin can acces
 ## Functionality
 - Auth: email-only mock login, localStorage persistence, role-aware nav.
 - Layout: `DashboardLayout` with `Sidebar` + `Topbar` (logout + language toggle).
-- Protected routes:
-  - `/login`
-  - `/customers`
-  - `/products` (admin only)
-  - `/orders`
-  - `/` redirects to `/customers`
-- Customers: search, status filter, sort, pagination, create/edit/delete modals, loading/empty/error states.
-- Products: CRUD with modals, status including `archived`.
-- Orders: list with status transitions (pending → paid/cancelled), per-row loading/error handling, create order modal.
-- Toasters: success/error feedback.
+- Protected routes: `/login`, `/customers`, `/products`, `/orders`, `/` redirects to `/customers`.
+- Customers: search, status filter, sort, pagination, create/edit/delete modals, loading/empty/error states, permission-aware actions.
+- Products: catalog list with search/filter/pagination, modals for create/edit, delete with confirm, loading/empty/error states; buttons respect permissions.
+- Orders: list with status transitions (pending → paid/cancelled), per-row loading/error handling, create order modal, status changes gated by role.
+- Toasters: success/error feedback across CRUD flows.
 - i18n: English by default; toggle to Spanish from the Topbar.
+
+## Killer Feature — Role-based UI + Permission Guard System
+Role-aware UI and guards control what each user sees and can do:
+
+```ts
+const permissions = {
+  admin: {
+    customers: ["read", "create", "update", "delete"],
+    products: ["read", "create", "update", "delete"],
+    orders: ["read", "create", "update"],
+  },
+  staff: {
+    customers: ["read", "update"],
+    products: ["read"],
+    orders: ["read"],
+  },
+};
+```
+
+- Router guard checks permissions per route (no access → redirect).
+- Sidebar only shows links the role can read.
+- Tables/buttons hide or disable actions the role cannot perform (e.g., staff cannot delete or change order status).
 
 ## Testing Stack
 - Jest with `ts-jest` + `jest-environment-jsdom`.

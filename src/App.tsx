@@ -12,23 +12,19 @@ function App() {
       <Route path="/" element={<Navigate to="/customers" replace />} />
       <Route path="/login" element={<LoginPage />} />
       <Route element={<ProtectedRoute />}>
-        <Route element={<DashboardLayout />}>
-          <Route index element={<Navigate to="/customers" replace />} />
-          {protectedRoutes.map((route) =>
-            route.onlyAdmin ? (
+          <Route element={<DashboardLayout />}>
+            <Route index element={<Navigate to="/customers" replace />} />
+            {protectedRoutes.map((route) => (
               <Route
                 key={route.path}
-                element={<RoleGuard allowAdminOnly />}
+                element={<RoleGuard resource={route.resource} action="read" />}
               >
                 <Route path={route.path} element={route.element} />
               </Route>
-            ) : (
-              <Route key={route.path} path={route.path} element={route.element} />
-            )
-          )}
+            ))}
+          </Route>
         </Route>
-      </Route>
-      <Route path="*" element={<Navigate to="/customers" replace />} />
+        <Route path="*" element={<Navigate to="/customers" replace />} />
     </Routes>
   );
 }

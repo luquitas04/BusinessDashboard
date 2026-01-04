@@ -1,15 +1,16 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAppSelector } from "../../../app/store/hooks";
+import { can, Permission, Resource } from "../permissions/permissions";
 
 type Props = {
-  allowAdminOnly?: boolean;
+  resource: Resource;
+  action?: Permission;
 };
 
-export const RoleGuard = ({ allowAdminOnly }: Props) => {
-  const { user } = useAppSelector((state) => state.auth);
-  const isAdmin = user?.role === "admin";
+export const RoleGuard = ({ resource, action = "read" }: Props) => {
+  const role = useAppSelector((state) => state.auth.user?.role);
 
-  if (allowAdminOnly && !isAdmin) {
+  if (!can(role, resource, action)) {
     return <Navigate to="/customers" replace />;
   }
 

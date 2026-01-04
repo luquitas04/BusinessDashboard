@@ -14,10 +14,17 @@ import {
   MessageToaster,
 } from "../../shared/ui";
 import { useDebouncedValue } from "../../shared/lib/useDebouncedValue";
+import { useI18n } from "../../shared/lib/i18n";
+import { usePermissions } from "../../shared/lib/permissions/usePermissions";
 import { ProductFormModal } from "./ProductFormModal";
 import "./ProductsTable.scss";
 
 export const ProductsTable = () => {
+  const { t } = useI18n();
+  const { can } = usePermissions();
+  const canCreateProducts = can("products", "create");
+  const canUpdateProducts = can("products", "update");
+  const canDeleteProducts = can("products", "delete");
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search);
   const [status, setStatus] = useState<Product["status"] | "all">("all");
@@ -27,7 +34,7 @@ export const ProductsTable = () => {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
   const [showDelete, setShowDelete] = useState(false);
-  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [deletingProduct, setDeletingProduct] = useState<Product | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
 
@@ -60,54 +67,57 @@ export const ProductsTable = () => {
       setActionError(null);
       setActionSuccess(null);
       if (editing) {
+        if (!canUpdateProducts) return;
         await updateProduct({ id: editing.id, data: payload }).unwrap();
-        setActionSuccess("Producto actualizado");
+        setActionSuccess(t("products.success.update"));
       } else {
+        if (!canCreateProducts) return;
         await createProduct(payload).unwrap();
-        setActionSuccess("Producto creado");
+        setActionSuccess(t("products.success.create"));
       }
       setShowForm(false);
       setEditing(null);
     } catch (error) {
       console.error(error);
-      setActionError(`No se pudo guardar el producto. Detalle: ${error}`);
+      setActionError(t("products.error.save", { error: String(error) }));
     }
   };
 
   const handleDelete = async () => {
-    if (!deletingId) return;
+    if (!deletingProduct || !canDeleteProducts) return;
     try {
       setActionError(null);
       setActionSuccess(null);
-      await deleteProduct(deletingId).unwrap();
+      await deleteProduct(deletingProduct.id).unwrap();
       setShowDelete(false);
-      setDeletingId(null);
-      setActionSuccess("Producto eliminado");
+      setDeletingProduct(null);
+      setActionSuccess(t("products.success.delete"));
     } catch (error) {
       console.error(error);
-      setActionError(`No se pudo eliminar el producto. Detalle: ${error}`);
+      setActionError(t("products.error.delete", { error: String(error) }));
     }
   };
 
   const disableNext = data.length < limit;
+  const showSkeleton = isLoading || (isFetching && data.length === 0);
 
   return (
     <div className="products-card">
       <div className="products-toolbar">
         <div className="products-toolbar__filters">
           <label className="products-toolbar__search">
-            <span>Búsqueda</span>
+            <span>{t("products.search")}</span>
             <input
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              placeholder="Buscar producto"
+              placeholder={t("products.search.placeholder")}
             />
           </label>
           <label className="products-toolbar__search">
-            <span>Estado</span>
+            <span>{t("products.status")}</span>
             <select
               value={status}
               onChange={(e) => {
@@ -115,13 +125,13 @@ export const ProductsTable = () => {
                 setPage(1);
               }}
             >
-              <option value="all">Todos</option>
-              <option value="active">Activos</option>
-              <option value="archived">Archivados</option>
+              <option value="all">{t("common.all")}</option>
+              <option value="active">{t("products.form.active")}</option>
+              <option value="archived">{t("products.form.archived")}</option>
             </select>
           </label>
           <label className="products-toolbar__search">
-            <span>Por página</span>
+            <span>{t("products.pageSize")}</span>
             <select
               value={limit}
               onChange={(e) => {
@@ -135,10 +145,12 @@ export const ProductsTable = () => {
             </select>
           </label>
         </div>
-        <Button onClick={() => setShowForm(true)}>Nuevo producto</Button>
+        {canCreateProducts && (
+          <Button onClick={() => setShowForm(true)}>{t("products.new")}</Button>
+        )}
       </div>
 
-      {isLoading ? (
+      {showSkeleton ? (
         <div className="products-table products-table--loading">
           {Array.from({ length: 5 }).map((_, idx) => (
             <div key={idx} className="products-table__skeleton" />
@@ -146,25 +158,32 @@ export const ProductsTable = () => {
         </div>
       ) : isError ? (
         <div className="products-state">
-          <p>Error al cargar productos.</p>
+          <p>{t("products.error")}</p>
           <Button variant="secondary" onClick={() => refetch()}>
-            Reintentar
+            {t("products.retry")}
           </Button>
         </div>
       ) : data.length === 0 ? (
         <div className="products-state">
-          <p>No hay productos</p>
-          <Button onClick={() => setShowForm(true)}>Crear producto</Button>
+          <p className="products-state__title">{t("products.empty")}</p>
+          <p className="products-state__description">
+            {t("products.empty.desc")}
+          </p>
+          {canCreateProducts && (
+            <Button onClick={() => setShowForm(true)}>
+              {t("products.new")}
+            </Button>
+          )}
         </div>
       ) : (
         <>
           <div className="products-table">
             <div className="products-table__head">
-              <span>Nombre</span>
-              <span>Precio</span>
-              <span>Stock</span>
-              <span>Estado</span>
-              <span>Acciones</span>
+              <span>{t("products.name")}</span>
+              <span>{t("products.price")}</span>
+              <span>{t("products.stock")}</span>
+              <span>{t("products.state")}</span>
+              <span>{t("products.actions")}</span>
             </div>
             <div className="products-table__body">
               {data.map((product) => (
@@ -178,37 +197,43 @@ export const ProductsTable = () => {
                         product.status === "active" ? "success" : "warning"
                       }
                     >
-                      {product.status}
+                      {product.status === "active"
+                        ? t("products.form.active")
+                        : t("products.form.archived")}
                     </Badge>
                   </span>
                   <span className="products-table__actions">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setEditing(product);
-                        setShowForm(true);
-                      }}
-                    >
-                      Editar
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setDeletingId(product.id);
-                        setShowDelete(true);
-                      }}
-                    >
-                      Eliminar
-                    </Button>
+                    {canUpdateProducts && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setEditing(product);
+                          setShowForm(true);
+                        }}
+                      >
+                        {t("products.edit")}
+                      </Button>
+                    )}
+                    {canDeleteProducts && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setDeletingProduct(product);
+                          setShowDelete(true);
+                        }}
+                      >
+                        {t("products.delete")}
+                      </Button>
+                    )}
                   </span>
                 </div>
               ))}
             </div>
           </div>
           <div className="products-pagination">
-            <span>Página {page}</span>
+            <span>{t("common.pageLabel", { page })}</span>
             <div className="products-pagination__actions">
               <Button
                 variant="secondary"
@@ -216,7 +241,7 @@ export const ProductsTable = () => {
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1 || isFetching}
               >
-                Anterior
+                {t("common.prev")}
               </Button>
               <Button
                 variant="secondary"
@@ -224,33 +249,44 @@ export const ProductsTable = () => {
                 onClick={() => setPage((p) => p + 1)}
                 disabled={disableNext || isFetching}
               >
-                Siguiente
+                {t("common.next")}
               </Button>
             </div>
           </div>
         </>
       )}
 
-      <ProductFormModal
-        open={showForm}
-        onClose={() => {
-          setShowForm(false);
-          setEditing(null);
-        }}
-        onSubmit={handleSubmit}
-        initialData={editing}
-        submitting={creating || updating}
-      />
+      {((canCreateProducts && !editing) || (canUpdateProducts && !!editing)) && (
+        <ProductFormModal
+          open={showForm}
+          onClose={() => {
+            setShowForm(false);
+            setEditing(null);
+          }}
+          onSubmit={handleSubmit}
+          initialData={editing}
+          submitting={creating || updating}
+        />
+      )}
 
-      <ConfirmDialog
-        open={showDelete}
-        onClose={() => setShowDelete(false)}
-        onConfirm={handleDelete}
-        loading={deleting}
-        title="Eliminar producto"
-        description="Esta acción no se puede deshacer."
-        confirmText="Eliminar"
-      />
+      {canDeleteProducts && (
+        <ConfirmDialog
+          open={showDelete}
+          onClose={() => {
+            setShowDelete(false);
+            setDeletingProduct(null);
+          }}
+          onConfirm={handleDelete}
+          loading={deleting}
+          title={
+            deletingProduct
+              ? t("products.delete.confirmName", { name: deletingProduct.name })
+              : t("products.delete")
+          }
+          description={t("common.deleteDesc")}
+          confirmText={t("products.delete")}
+        />
+      )}
       {actionError && (
         <ErrorToaster
           message={actionError}

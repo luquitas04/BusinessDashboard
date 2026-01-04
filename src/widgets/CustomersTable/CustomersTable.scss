@@ -104,6 +104,17 @@
   border-radius: 10px;
 }
 
+.customers-state__title {
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.customers-state__description {
+  color: #4b5563;
+  text-align: center;
+  max-width: 340px;
+}
+
 .customers-state--inline {
   align-items: flex-start;
   background: transparent;

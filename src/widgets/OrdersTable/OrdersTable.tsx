@@ -15,6 +15,7 @@ import {
 } from "../../shared/ui";
 import { useDebouncedValue } from "../../shared/lib/useDebouncedValue";
 import { useI18n } from "../../shared/lib/i18n";
+import { usePermissions } from "../../shared/lib/permissions/usePermissions";
 import { OrderFormModal } from "./OrderFormModal";
 import "./OrdersTable.scss";
 
@@ -23,6 +24,9 @@ const formatDate = (value: Order["createdAt"]) =>
 
 export const OrdersTable = () => {
   const { t } = useI18n();
+  const { can } = usePermissions();
+  const canCreateOrders = can("orders", "create");
+  const canUpdateOrders = can("orders", "update");
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search);
   const [status, setStatus] = useState<Order["status"] | "all">("all");
@@ -33,6 +37,7 @@ export const OrdersTable = () => {
   const [actionError, setActionError] = useState<string | null>(null);
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const showSkeleton = isLoading || (isFetching && data.length === 0);
 
   const params = useMemo(
     () => ({
@@ -60,6 +65,7 @@ export const OrdersTable = () => {
   const [updatingId, setUpdatingId] = useState<number | null>(null);
 
   const handleStatusChange = async (id: number, newStatus: Order["status"]) => {
+    if (!canUpdateOrders) return;
     setUpdatingId(id);
     setActionError(null);
     setActionSuccess(null);
@@ -75,6 +81,7 @@ export const OrdersTable = () => {
   };
 
   const handleCreate = async (payload: Omit<Order, "id">) => {
+    if (!canCreateOrders) return;
     setActionError(null);
     setActionSuccess(null);
     try {
@@ -152,11 +159,13 @@ export const OrdersTable = () => {
           </Select>
         </div>
         <div className="orders-toolbar__actions">
-          <Button onClick={() => setShowForm(true)}>{t("orders.new")}</Button>
+          {canCreateOrders && (
+            <Button onClick={() => setShowForm(true)}>{t("orders.new")}</Button>
+          )}
         </div>
       </div>
 
-      {isLoading ? (
+      {showSkeleton ? (
         <div className="orders-table orders-table--loading">
           {Array.from({ length: 5 }).map((_, idx) => (
             <div key={idx} className="orders-table__skeleton" />
@@ -171,7 +180,13 @@ export const OrdersTable = () => {
         </div>
       ) : data.length === 0 ? (
         <div className="orders-state">
-          <p>{t("orders.empty")}</p>
+          <p className="orders-state__title">{t("orders.empty")}</p>
+          <p className="orders-state__description">
+            {t("orders.empty.desc")}
+          </p>
+          {canCreateOrders && (
+            <Button onClick={() => setShowForm(true)}>{t("orders.new")}</Button>
+          )}
         </div>
       ) : (
         <>
@@ -209,7 +224,7 @@ export const OrdersTable = () => {
                   </span>
                   <span>{formatDate(order.createdAt)}</span>
                   <span className="orders-table__actions">
-                    {order.status === "pending" ? (
+                    {order.status === "pending" && canUpdateOrders ? (
                       <>
                         <Button
                           size="sm"
@@ -277,12 +292,14 @@ export const OrdersTable = () => {
           onClose={() => setActionSuccess(null)}
         />
       )}
-      <OrderFormModal
-        open={showForm}
-        onClose={() => setShowForm(false)}
-        onSubmit={handleCreate}
-        submitting={creating}
-      />
+      {canCreateOrders && (
+        <OrderFormModal
+          open={showForm}
+          onClose={() => setShowForm(false)}
+          onSubmit={handleCreate}
+          submitting={creating}
+        />
+      )}
     </div>
   );
 };

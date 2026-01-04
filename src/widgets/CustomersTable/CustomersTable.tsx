@@ -15,6 +15,7 @@ import {
 } from "../../shared/ui";
 import { useDebouncedValue } from "../../shared/lib/useDebouncedValue";
 import { useI18n } from "../../shared/lib/i18n";
+import { usePermissions } from "../../shared/lib/permissions/usePermissions";
 import { CustomersToolbar } from "./CustomersToolbar";
 import { CustomersPagination } from "./CustomersPagination";
 import { CustomerFormModal } from "./CustomerFormModal";
@@ -36,9 +37,13 @@ export const CustomersTable = () => {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Customers | null>(null);
   const [showDelete, setShowDelete] = useState(false);
-  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [deletingCustomer, setDeletingCustomer] = useState<Customers | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
+  const { can } = usePermissions();
+  const canCreateCustomers = can("customers", "create");
+  const canUpdateCustomers = can("customers", "update");
+  const canDeleteCustomers = can("customers", "delete");
 
   const params = useMemo(
     () => ({
@@ -62,7 +67,7 @@ export const CustomersTable = () => {
 
   const [createCustomer, { isLoading: creating }] = useCreateCustomerMutation();
   const [updateCustomer, { isLoading: updating }] = useUpdateCustomerMutation();
-  const [deleteCustomer, { isLoading: deleting, }] =
+  const [deleteCustomer, { isLoading: deleting }] =
     useDeleteCustomerMutation();
 
   const handleSubmitForm = async (payload: Omit<Customers, "id">) => {
@@ -70,9 +75,11 @@ export const CustomersTable = () => {
       setActionError(null);
       setActionSuccess(null);
       if (editing) {
+        if (!canUpdateCustomers) return;
         await updateCustomer({ id: editing.id, data: payload }).unwrap();
         setActionSuccess(t("customers.success.update"));
       } else {
+        if (!canCreateCustomers) return;
         await createCustomer(payload).unwrap();
         setActionSuccess(t("customers.success.create"));
       }
@@ -85,14 +92,15 @@ export const CustomersTable = () => {
   };
 
   const handleDelete = async () => {
-    if (!deletingId) return;
+    if (!deletingCustomer || !canDeleteCustomers) return;
+    const id = deletingCustomer.id;
     try {
       setActionError(null);
       setActionSuccess(null);
-      await deleteCustomer(deletingId).unwrap();
+      await deleteCustomer(id).unwrap();
       setActionSuccess(t("customers.success.delete"));
       setShowDelete(false);
-      setDeletingId(null);
+      setDeletingCustomer(null);
     } catch (error) {
       console.error(error);
       setActionError(t("customers.error.delete", { error: String(error) }));
@@ -106,16 +114,19 @@ export const CustomersTable = () => {
   }, [isError, t]);
 
   const openEdit = (customer: Customers) => {
+    if (!canUpdateCustomers) return;
     setEditing(customer);
     setShowForm(true);
   };
 
-  const openDelete = (id: number) => {
-    setDeletingId(id);
+  const openDelete = (customer: Customers) => {
+    if (!canDeleteCustomers) return;
+    setDeletingCustomer(customer);
     setShowDelete(true);
   };
 
   const disableNext = data.length < limit;
+  const showSkeleton = isLoading || (isFetching && data.length === 0);
 
   return (
     <div className="customers-card">
@@ -133,10 +144,14 @@ export const CustomersTable = () => {
           setLimit(size);
           setPage(1);
         }}
-        onCreate={() => setShowForm(true)}
+        onCreate={() => {
+          if (!canCreateCustomers) return;
+          setShowForm(true);
+        }}
+        canCreate={canCreateCustomers}
       />
 
-      {isLoading ? (
+      {showSkeleton ? (
         <div className="customers-table customers-table--loading">
           {Array.from({ length: 5 }).map((_, idx) => (
             <div key={idx} className="customers-table__skeleton" />
@@ -151,8 +166,15 @@ export const CustomersTable = () => {
         </div>
       ) : data.length === 0 ? (
         <div className="customers-state">
-          <p>{t("customers.empty")}</p>
-          <Button onClick={() => setShowForm(true)}>{t("customers.new")}</Button>
+          <p className="customers-state__title">{t("customers.empty")}</p>
+          <p className="customers-state__description">
+            {t("customers.empty.desc")}
+          </p>
+          {canCreateCustomers && (
+            <Button onClick={() => setShowForm(true)}>
+              {t("customers.new")}
+            </Button>
+          )}
         </div>
       ) : (
         <>
@@ -182,20 +204,24 @@ export const CustomersTable = () => {
                   </span>
                   <span>{formatDate(customer.createdAt)}</span>
                   <span className="customers-table__actions">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => openEdit(customer)}
-                    >
-                      {t("customers.edit")}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => openDelete(customer.id)}
-                    >
-                      {t("customers.delete")}
-                    </Button>
+                    {canUpdateCustomers && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => openEdit(customer)}
+                      >
+                        {t("customers.edit")}
+                      </Button>
+                    )}
+                    {canDeleteCustomers && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => openDelete(customer)}
+                      >
+                        {t("customers.delete")}
+                      </Button>
+                    )}
                   </span>
                 </div>
               ))}
@@ -211,26 +237,39 @@ export const CustomersTable = () => {
         </>
       )}
 
-      <CustomerFormModal
-        open={showForm}
-        onClose={() => {
-          setShowForm(false);
-          setEditing(null);
-        }}
-        initialData={editing}
-        onSubmit={handleSubmitForm}
-        submitting={creating || updating}
-      />
+      {((canCreateCustomers && !editing) || (canUpdateCustomers && !!editing)) && (
+        <CustomerFormModal
+          open={showForm}
+          onClose={() => {
+            setShowForm(false);
+            setEditing(null);
+          }}
+          initialData={editing}
+          onSubmit={handleSubmitForm}
+          submitting={creating || updating}
+        />
+      )}
 
-      <ConfirmDialog
-        open={showDelete}
-        onClose={() => setShowDelete(false)}
-        onConfirm={handleDelete}
-        loading={deleting}
-        title={t("customers.delete.confirm")}
-        description={t("customers.delete.desc")}
-        confirmText={t("customers.delete")}
-      />
+      {canDeleteCustomers && (
+        <ConfirmDialog
+          open={showDelete}
+          onClose={() => {
+            setShowDelete(false);
+            setDeletingCustomer(null);
+          }}
+          onConfirm={handleDelete}
+          loading={deleting}
+          title={
+            deletingCustomer
+              ? t("customers.delete.confirmName", {
+                  name: deletingCustomer.name,
+                })
+              : t("customers.delete.confirm")
+          }
+          description={t("customers.delete.desc")}
+          confirmText={t("customers.delete")}
+        />
+      )}
       {actionError && (
         <ErrorToaster
           message={actionError}

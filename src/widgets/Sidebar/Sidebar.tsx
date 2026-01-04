@@ -2,12 +2,13 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/store/hooks";
 import { authSlice } from "../../app/store/slices/authSlice";
 import { useI18n } from "../../shared/lib/i18n";
+import { usePermissions } from "../../shared/lib/permissions/usePermissions";
 import "./Sidebar.scss";
 
 const links = [
-  { to: "/customers", labelKey: "nav.customers" },
-  { to: "/orders", labelKey: "nav.orders" },
-  { to: "/products", labelKey: "nav.products", onlyAdmin: true },
+  { to: "/customers", labelKey: "nav.customers", resource: "customers" as const },
+  { to: "/orders", labelKey: "nav.orders", resource: "orders" as const },
+  { to: "/products", labelKey: "nav.products", resource: "products" as const },
 ];
 
 export const Sidebar = () => {
@@ -17,6 +18,7 @@ export const Sidebar = () => {
   const { user } = useAppSelector((state) => state.auth);
   const role = user?.role;
   const { t } = useI18n();
+  const { can } = usePermissions();
   const isLocalhost =
     typeof window !== "undefined" &&
     (window.location.hostname === "localhost" ||
@@ -35,7 +37,7 @@ export const Sidebar = () => {
       </div>
       <nav className="sidebar__nav">
         {links
-          .filter((link) => (link.onlyAdmin ? role === "admin" : true))
+          .filter((link) => can(link.resource, "read"))
           .map((link) => (
             <NavLink
               key={link.to}
