@@ -2,6 +2,9 @@
 
 Admin-style dashboard built with React, Redux Toolkit, RTK Query, React Router, SCSS, and json-server mock API. The UI follows a strict Feature-Sliced Design (FSD) structure and includes i18n (English default with toggle), role-based routing, CRUD for customers/products, and order status management.
 
+## Demo
+Project demo: <a href="https://businessdashbo4rd.netlify.app/login" target="_blank">businessdashbo4rd.netlify.app</a>
+
 ## Quick Start
 - Requirements: Node 18+ and npm
 - Install: `npm install`

@@ -17,6 +17,10 @@ export const Sidebar = () => {
   const { user } = useAppSelector((state) => state.auth);
   const role = user?.role;
   const { t } = useI18n();
+  const isLocalhost =
+    typeof window !== "undefined" &&
+    (window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1");
 
   const handleLogout = () => {
     dispatch(logOut());
@@ -44,7 +48,7 @@ export const Sidebar = () => {
             </NavLink>
           ))}
       </nav>
-      <p className="sidebar__note">{t("nav.mockNotice")}</p>
+      {isLocalhost && <p className="sidebar__note">{t("nav.mockNotice")}</p>}
       <button className="sidebar__logout" onClick={handleLogout}>
         {t("nav.logout")}
       </button>
