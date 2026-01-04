@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "exclude": [
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "src/**/__tests__/**",
+    "src/shared/test/**",
+    "mock/**",
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
+  ]
+}
