@@ -2,8 +2,9 @@ import { http, HttpResponse, delay } from "msw";
 import { Customers } from "../../../entities/customer/types/type";
 import { Product } from "../../../entities/product/types/type";
 import { Order } from "../../../entities/order/types/type";
+import { API_BASE_URL } from "../../config/api";
 
-const baseUrl = "http://localhost:4000";
+const baseUrl = API_BASE_URL;
 
 let users: User[] = [
   { id: 1, email: "admin@test.com", role: "admin", name: "Admin User" },

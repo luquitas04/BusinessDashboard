@@ -64,7 +64,7 @@ src/
 
 ## Notes
 - The mock API is stateful while the server runs; restart `npm run mock` to reset data to `mock/db.json`.
-- Base API URL is `http://localhost:4000` (see `src/shared/api/baseApi.ts`).
+- Base API URL defaults to `http://localhost:4000` when running on localhost (dev/tests) and falls back to the current origin for production builds (see `src/shared/api/baseApi.ts`).
 - Styled with SCSS (no external UI kits) to keep a lightweight, professional admin look.
 
 ## Demo & Mock API
