@@ -4,7 +4,7 @@ Admin-style dashboard built with **React**, **Redux Toolkit**, **RTK Query**, **
 The project simulates a real-world internal SaaS tool, focusing on **state-heavy UIs**, **role-based permissions**, and **scalable frontend architecture** using a strict **Feature-Sliced Design (FSD)** structure.
 
 ## Demo
-🔗 https://businessdashbo4rd.netlify.app
+<a href="https://businessdashbo4rd.netlify.app" target="_blank">https://businessdashbo4rd.netlify.app</a>
 
 **Mock accounts**
 - **Admin:** `admin@test.com`
