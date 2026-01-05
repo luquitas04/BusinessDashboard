@@ -37,7 +37,6 @@ export const OrdersTable = () => {
   const [actionError, setActionError] = useState<string | null>(null);
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
-  const showSkeleton = isLoading || (isFetching && data.length === 0);
 
   const params = useMemo(
     () => ({
@@ -58,6 +57,7 @@ export const OrdersTable = () => {
     refetch,
     isFetching,
   } = useGetOrdersQuery(params);
+  const showSkeleton = isLoading || (isFetching && data.length === 0);
 
   const [updateStatus, { isLoading: updating }] =
     useUpdateOrderStatusMutation();
